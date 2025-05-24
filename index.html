@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Absensi & Jurnal TQS–KHS 2025/2026</title>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            primary: {
+              50: '#f0f9ff',
+              100: '#e0f2fe',
+              200: '#bae6fd',
+              300: '#7dd3fc',
+              400: '#38bdf8',
+              500: '#0ea5e9',
+              600: '#0284c7',
+              700: '#0369a1',
+              800: '#075985',
+              900: '#0c4a6e',
+            },
+            secondary: {
+              50: '#f5f3ff',
+              100: '#ede9fe',
+              200: '#ddd6fe',
+              300: '#c4b5fd',
+              400: '#a78bfa',
+              500: '#8b5cf6',
+              600: '#7c3aed',
+              700: '#6d28d9',
+              800: '#5b21b6',
+              900: '#4c1d95',
+            }
+          },
+          animation: {
+            'fade-in': 'fadeIn 0.3s ease-in-out',
+            'float': 'float 3s ease-in-out infinite',
+          },
+          keyframes: {
+            fadeIn: {
+              '0%': { opacity: '0' },
+              '100%': { opacity: '1' },
+            },
+            float: {
+              '0%, 100%': { transform: 'translateY(0)' },
+              '50%': { transform: 'translateY(-5px)' },
+            }
+          }
+        },
+      },
+    }
+  </script>
+  <style>
+    html { scroll-behavior: smooth; }
+    .hide { display: none; }
+    .gradient-text {
+      background-clip: text;
+      -webkit-background-clip: text;
+      color: transparent;
+    }
+    .glass-effect {
+      backdrop-filter: blur(10px);
+      background-color: rgba(255, 255, 255, 0.1);
+    }
+    .nav-active {
+      position: relative;
+    }
+    .nav-active::after {
+      content: '';
+      position: absolute;
+      bottom: -4px;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+      border-radius: 2px;
+    }
+    .stat-card {
+      transition: all 0.3s ease;
+      box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+    }
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05);
+    }
+    .status-badge {
+      padding: 0.25rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      display: inline-flex;
+      align-items: center;
+    }
+    .status-badge i {
+      margin-right: 0.25rem;
+      font-size: 0.6rem;
+    }
+    .select-custom {
+      background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20'%3e%3cpath stroke='%236b7280' stroke-linecap='round' stroke-linejoin='round' stroke-width='1.5' d='M6 8l4 4 4-4'/%3e%3c/svg%3e");
+      background-position: right 0.5rem center;
+      background-repeat: no-repeat;
+      background-size: 1.5em 1.5em;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  </style>
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-100 transition-colors duration-200">
+<div id="app" class="min-h-screen flex flex-col">
+  <!-- Navigation -->
+  <nav class="flex items-center justify-between px-6 py-3 bg-white dark:bg-gray-800 shadow-md sticky top-0 z-10">
+    <div class="flex items-center space-x-2">
+      <div class="w-8 h-8 rounded-full bg-gradient-to-br from-primary-600 to-secondary-500 flex items-center justify-center text-white font-bold">
+        <i class="fas fa-graduation-cap text-sm"></i>
+      </div>
+      <span class="font-bold text-lg bg-gradient-to-r from-primary-600 to-secondary-500 gradient-text">
+        TQS–KHS
+      </span>
+    </div>
+    <div class="flex items-center gap-4">
+      <button id="btnDashboard" class="navbtn px-3 py-1 rounded-md font-medium text-sm transition-all duration-200 hover:text-primary-600 dark:hover:text-primary-400">
+        <i class="fas fa-tachometer-alt mr-2"></i>Dashboard
+      </button>
+      <button id="btnAbsensi" class="navbtn px-3 py-1 rounded-md font-medium text-sm transition-all duration-200 hover:text-primary-600 dark:hover:text-primary-400">
+        <i class="fas fa-clipboard-check mr-2"></i>Absensi
+      </button>
+      <button id="btnJurnal" class="navbtn px-3 py-1 rounded-md font-medium text-sm transition-all duration-200 hover:text-primary-600 dark:hover:text-primary-400">
+        <i class="fas fa-book-open mr-2"></i>Jurnal
+      </button>
+      <button id="btnLogout" class="navbtn hide px-3 py-1 rounded-md font-medium text-sm bg-red-100 text-red-600 hover:bg-red-200 dark:bg-red-900/30 dark:text-red-300 dark:hover:bg-red-900/50 transition-all duration-200">
+        <i class="fas fa-sign-out-alt mr-2"></i>Logout
+      </button>
+      <button id="btnDark" class="w-8 h-8 rounded-full flex items-center justify-center bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 transition-all duration-200" title="Toggle Dark Mode">
+        <span id="darkIcon" class="text-sm">🌙</span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Main Content -->
+  <main id="main" class="flex-1 flex flex-col items-center py-6 px-4 sm:px-6">
+    <!-- Login Section -->
+    <section id="loginSection" class="w-full max-w-md mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden transition-all duration-300 animate-fade-in">
+      <div class="bg-gradient-to-r from-primary-500 to-secondary-500 p-4 text-white">
+        <h2 class="text-xl font-bold flex items-center">
+          <i class="fas fa-user-circle mr-2"></i> Login Sistem
+        </h2>
+        <p class="text-sm opacity-90">Masukkan kredensial Anda untuk mengakses panel</p>
+      </div>
+      <form id="loginForm" class="p-6 flex flex-col gap-4">
+        <div>
+          <label for="loginUser" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Username</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fas fa-user text-gray-400"></i>
+            </div>
+            <input class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
+                   id="loginUser" placeholder="Username" autocomplete="username" required />
+          </div>
+        </div>
+        <div>
+          <label for="loginPass" class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Password</label>
+          <div class="relative">
+            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+              <i class="fas fa-lock text-gray-400"></i>
+            </div>
+            <input class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" 
+                   id="loginPass" placeholder="Password" type="password" autocomplete="current-password" required />
+          </div>
+        </div>
+        <button class="w-full bg-gradient-to-r from-primary-600 to-secondary-500 text-white py-2.5 rounded-lg font-medium hover:from-primary-700 hover:to-secondary-600 transition-all duration-300 shadow-md hover:shadow-lg flex items-center justify-center">
+          <i class="fas fa-sign-in-alt mr-2"></i> Login
+        </button>
+        <div id="loginError" class="text-red-500 text-sm mt-1 text-center"></div>
+      </form>
+    </section>
+
+    <!-- Dashboard Section -->
+    <section id="dashboardSection" class="hide w-full max-w-6xl mx-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="font-bold text-2xl flex items-center">
+          <i class="fas fa-tachometer-alt mr-3 text-primary-600"></i> Dashboard
+        </h2>
+        <div class="text-sm bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-200 px-3 py-1 rounded-full">
+          <i class="far fa-calendar-alt mr-1"></i> <span id="currentDate"></span>
+        </div>
+      </div>
+      
+      <!-- Stats Cards -->
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-4 mb-8">
+        <div class="stat-card bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Total Santri</p>
+              <h3 class="text-2xl font-bold mt-1" id="statTotalSantri">0</h3>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-primary-100 dark:bg-primary-900/30 flex items-center justify-center text-primary-600 dark:text-primary-300">
+              <i class="fas fa-users text-xl"></i>
+            </div>
+          </div>
+          <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+            <span class="text-xs text-gray-500 dark:text-gray-400"><i class="fas fa-info-circle mr-1"></i> TQS & KHS</span>
+          </div>
+        </div>
+        
+        <div class="stat-card bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Hadir</p>
+              <h3 class="text-2xl font-bold mt-1 text-green-600 dark:text-green-400" id="statHadir">0</h3>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-green-100 dark:bg-green-900/30 flex items-center justify-center text-green-600 dark:text-green-300">
+              <i class="fas fa-check-circle text-xl"></i>
+            </div>
+          </div>
+          <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+            <span class="text-xs text-gray-500 dark:text-gray-400"><i class="fas fa-clock mr-1"></i> Hari ini</span>
+          </div>
+        </div>
+        
+        <div class="stat-card bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Alpa</p>
+              <h3 class="text-2xl font-bold mt-1 text-red-600 dark:text-red-400" id="statAlpa">0</h3>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-red-100 dark:bg-red-900/30 flex items-center justify-center text-red-600 dark:text-red-300">
+              <i class="fas fa-times-circle text-xl"></i>
+            </div>
+          </div>
+          <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+            <span class="text-xs text-gray-500 dark:text-gray-400"><i class="fas fa-clock mr-1"></i> Hari ini</span>
+          </div>
+        </div>
+        
+        <div class="stat-card bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Izin</p>
+              <h3 class="text-2xl font-bold mt-1 text-yellow-600 dark:text-yellow-400" id="statIzin">0</h3>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-yellow-100 dark:bg-yellow-900/30 flex items-center justify-center text-yellow-600 dark:text-yellow-300">
+              <i class="fas fa-envelope text-xl"></i>
+            </div>
+          </div>
+          <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+            <span class="text-xs text-gray-500 dark:text-gray-400"><i class="fas fa-clock mr-1"></i> Hari ini</span>
+          </div>
+        </div>
+        
+        <div class="stat-card bg-white dark:bg-gray-800 rounded-xl p-4 border border-gray-100 dark:border-gray-700">
+          <div class="flex items-center justify-between">
+            <div>
+              <p class="text-sm text-gray-500 dark:text-gray-400">Sakit</p>
+              <h3 class="text-2xl font-bold mt-1 text-purple-600 dark:text-purple-400" id="statSakit">0</h3>
+            </div>
+            <div class="w-12 h-12 rounded-full bg-purple-100 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-300">
+              <i class="fas fa-procedures text-xl"></i>
+            </div>
+          </div>
+          <div class="mt-3 pt-3 border-t border-gray-100 dark:border-gray-700">
+            <span class="text-xs text-gray-500 dark:text-gray-400"><i class="fas fa-clock mr-1"></i> Hari ini</span>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Charts Section -->
+      <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 border border-gray-100 dark:border-gray-700">
+          <h3 class="font-semibold mb-3 flex items-center text-gray-700 dark:text-gray-300">
+            <i class="fas fa-chart-pie mr-2 text-primary-600"></i> Status Kehadiran
+          </h3>
+          <div class="h-64">
+            <canvas id="pieStatus" class="w-full h-full"></canvas>
+          </div>
+        </div>
+        <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-4 border border-gray-100 dark:border-gray-700">
+          <h3 class="font-semibold mb-3 flex items-center text-gray-700 dark:text-gray-300">
+            <i class="fas fa-chart-bar mr-2 text-primary-600"></i> Kehadiran Per Kelas
+          </h3>
+          <div class="h-64">
+            <canvas id="barKelas" class="w-full h-full"></canvas>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Recent Records -->
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden border border-gray-100 dark:border-gray-700">
+        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+          <h3 class="font-semibold flex items-center text-gray-700 dark:text-gray-300">
+            <i class="fas fa-history mr-2 text-primary-600"></i> Rekap Terakhir
+          </h3>
+          <span class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full">
+            <i class="fas fa-info-circle mr-1"></i> 3 pertemuan terakhir
+          </span>
+        </div>
+        <div id="rekapTableDiv" class="overflow-x-auto"></div>
+      </div>
+    </section>
+
+    <!-- Absensi Section -->
+    <section id="absensiSection" class="hide w-full max-w-4xl mx-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="font-bold text-2xl flex items-center">
+          <i class="fas fa-clipboard-check mr-3 text-primary-600"></i> Absensi Santri
+        </h2>
+        <div class="text-sm bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-200 px-3 py-1 rounded-full">
+          <i class="far fa-clock mr-1"></i> <span id="currentTime"></span>
+        </div>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow p-6 border border-gray-100 dark:border-gray-700 mb-6">
+        <div class="flex flex-wrap gap-4 mb-6 items-center">
+          <div class="flex-1 min-w-[200px]">
+            <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Kelas</label>
+            <select id="kelasSelect" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent select-custom">
+              <option value="TQS">TQS Angkatan 05</option>
+              <option value="KHS">KHS Angkatan 01</option>
+            </select>
+          </div>
+          <div class="flex-1 min-w-[200px]">
+            <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Waktu Pertemuan</label>
+            <select id="waktuSelect" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent select-custom"></select>
+          </div>
+          <div class="flex-1 min-w-[200px]">
+            <label class="block text-sm font-medium mb-1 text-gray-700 dark:text-gray-300">Cari Santri</label>
+            <div class="relative">
+              <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                <i class="fas fa-search text-gray-400"></i>
+              </div>
+              <input id="searchSantri" class="w-full pl-10 pr-3 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Nama santri..." />
+            </div>
+          </div>
+          <div class="self-end">
+            <button id="btnResetAbsensi" class="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200 text-gray-700 dark:text-gray-300">
+              <i class="fas fa-redo mr-2"></i> Reset
+            </button>
+          </div>
+        </div>
+        
+        <form id="absensiForm">
+          <div class="overflow-x-auto rounded-lg border border-gray-200 dark:border-gray-700">
+            <table class="min-w-full bg-white dark:bg-gray-800">
+              <thead class="bg-gray-50 dark:bg-gray-700">
+                <tr>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">No</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Nama Santri</th>
+                  <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Status</th>
+                </tr>
+              </thead>
+              <tbody id="absensiTableBody" class="divide-y divide-gray-200 dark:divide-gray-700"></tbody>
+            </table>
+          </div>
+          
+          <div class="mt-6 flex items-center">
+            <button type="submit" class="bg-gradient-to-r from-primary-600 to-secondary-500 text-white px-6 py-2.5 rounded-lg font-medium hover:from-primary-700 hover:to-secondary-600 transition-all duration-300 shadow-md hover:shadow-lg flex items-center">
+              <i class="fas fa-save mr-2"></i> Simpan Absensi
+            </button>
+            <span id="absensiInfo" class="ml-4 text-sm"></span>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Status Legend -->
+      <div class="flex flex-wrap gap-3 mt-4">
+        <div class="status-badge bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200">
+          <i class="fas fa-check-circle"></i> Hadir
+        </div>
+        <div class="status-badge bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200">
+          <i class="fas fa-times-circle"></i> Alpa
+        </div>
+        <div class="status-badge bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200">
+          <i class="fas fa-envelope"></i> Izin
+        </div>
+        <div class="status-badge bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200">
+          <i class="fas fa-procedures"></i> Sakit
+        </div>
+      </div>
+    </section>
+
+    <!-- Jurnal Section -->
+    <section id="jurnalSection" class="hide w-full max-w-3xl mx-auto">
+      <div class="flex justify-between items-center mb-6">
+        <h2 class="font-bold text-2xl flex items-center">
+          <i class="fas fa-book-open mr-3 text-primary-600"></i> Jurnal Pelajaran
+        </h2>
+        <div class="text-sm bg-primary-100 text-primary-800 dark:bg-primary-900/30 dark:text-primary-200 px-3 py-1 rounded-full">
+          <i class="far fa-calendar-alt mr-1"></i> <span id="journalDate"></span>
+        </div>
+      </div>
+      
+      <div class="bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden border border-gray-100 dark:border-gray-700">
+        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-700/50">
+          <h3 class="font-semibold flex items-center text-gray-700 dark:text-gray-300">
+            <i class="fas fa-edit mr-2 text-primary-600"></i> Form Jurnal
+          </h3>
+        </div>
+        
+        <form id="jurnalForm" class="p-6">
+          <div class="mb-6">
+            <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Pilih Jadwal</label>
+            <select id="jurnalJadwalSelect" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-2.5 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent select-custom"></select>
+          </div>
+          
+          <div class="mb-6">
+            <label class="block text-sm font-medium mb-2 text-gray-700 dark:text-gray-300">Materi / Kegiatan</label>
+            <textarea id="jurnalMateri" rows="5" class="w-full border border-gray-300 dark:border-gray-600 rounded-lg p-3 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent" placeholder="Tuliskan materi yang diajarkan atau kegiatan yang dilakukan..." required></textarea>
+          </div>
+          
+          <div class="flex items-center">
+            <button type="submit" class="bg-gradient-to-r from-primary-600 to-secondary-500 text-white px-6 py-2.5 rounded-lg font-medium hover:from-primary-700 hover:to-secondary-600 transition-all duration-300 shadow-md hover:shadow-lg flex items-center">
+              <i class="fas fa-save mr-2"></i> Simpan Jurnal
+            </button>
+            <span id="jurnalInfo" class="ml-4 text-sm"></span>
+          </div>
+        </form>
+      </div>
+      
+      <!-- Recent Journals -->
+      <div class="mt-8 bg-white dark:bg-gray-800 rounded-xl shadow overflow-hidden border border-gray-100 dark:border-gray-700">
+        <div class="px-6 py-4 border-b border-gray-100 dark:border-gray-700 flex justify-between items-center">
+          <h3 class="font-semibold flex items-center text-gray-700 dark:text-gray-300">
+            <i class="fas fa-history mr-2 text-primary-600"></i> Jurnal Terakhir
+          </h3>
+          <span class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full">
+            <i class="fas fa-info-circle mr-1"></i> 3 entri terakhir
+          </span>
+        </div>
+        <div id="recentJournals" class="divide-y divide-gray-200 dark:divide-gray-700">
+          <!-- Will be filled by JavaScript -->
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="text-center py-4 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700 text-gray-500 dark:text-gray-400 text-sm mt-8">
+    <div class="container mx-auto px-4">
+      &copy; 2025–2026 <span class="font-semibold text-primary-600 dark:text-primary-400">TQS–KHS</span> | Sistem Absensi & Jurnal Digital | 
+      <a href="mailto:support@tqs-khs.com" class="text-primary-600 dark:text-primary-400 hover:underline ml-1">
+        <i class="fas fa-envelope mr-1"></i> Support
+      </a>
+    </div>
+  </footer>
+</div>
+<script>
+/* ======== DATA MASTER ======== */
+const USERS = [
+  { username: "admin", password: "admin123", role: "admin" },
+  { username: "fuad", password: "tqs05", role: "pengajar" },
+  { username: "abdullah", password: "khs01", role: "pengajar" },
+];
+const KELAS = {
+  TQS: [
+    "FUAD FIRDAUS", "FAUZAN TAUFIQ", "JABIR", "AFFAN AL FARINSY", "AL HARITS", "AZMI AT TAMANI",
+    "MUHAMMAD ZUBAIR", "JUNDI ABDULLAH", "ABDUL HADI", "YAHYA", "SUFYAN BIN AFIT", "FAZA UBAIDILLAH", "MUHAMMAD"
+  ],
+  KHS: [
+    "ABDULLAH SERIWA", "YODA AFRIZAL", "DAWUD", "ADAM ROFIF TSAQIF", "MUHAMMAD SURYA BASKARAJATI", "FARID",
+    "MUHAMMAD FAQQIH MUBAROK", "YAHYA", "HAFIZH", "HAMMAAM", "MUHAMMAD DZAKY MUMTAZ", "UMAIR", "DIMAS EKA NUGRAHA", "MUHAMAD DENI MAULANA"
+  ],
+};
+const PERTEMUAN_WAKTU = [
+  "06:15–07:00",
+  "08:45–09:30",
+  "10:00–10:45",
+  "10:45–11:30"
+];
+const STATUS_LIST = [
+  { text: "Hadir", color: "bg-green-100 text-green-800 dark:bg-green-900/30 dark:text-green-200", icon: "fa-check-circle" },
+  { text: "Alpa", color: "bg-red-100 text-red-800 dark:bg-red-900/30 dark:text-red-200", icon: "fa-times-circle" },
+  { text: "Izin", color: "bg-yellow-100 text-yellow-800 dark:bg-yellow-900/30 dark:text-yellow-200", icon: "fa-envelope" },
+  { text: "Sakit", color: "bg-purple-100 text-purple-800 dark:bg-purple-900/30 dark:text-purple-200", icon: "fa-procedures" }
+];
+const JADWAL = [
+  { hari: "Sabtu", jam: "08:00–08:45", mapel: "Ta'dzimussunnah" },
+  { hari: "Sabtu", jam: "10:00–10:45", mapel: "Shohih Bukhori" },
+  { hari: "Ahad", jam: "06:30–07:00", mapel: "Tafsir" },
+  { hari: "Senin", jam: "06:30–07:00", mapel: "Mustholah" },
+  { hari: "Senin", jam: "08:00–08:45", mapel: "Ushul Iman" },
+  { hari: "Senin", jam: "10:00–10:45", mapel: "Al Muharror" },
+  { hari: "Senin", jam: "10:45–11:30", mapel: "Tadwinussunnah" },
+  { hari: "Senin", jam: "12:30–13:15", mapel: "Tajwid" },
+  { hari: "Selasa", jam: "06:30–07:00", mapel: "Manhajul Bahts" },
+  { hari: "Selasa", jam: "08:00–08:45", mapel: "Ta'dzimussunnah" },
+  { hari: "Selasa", jam: "10:00–10:45", mapel: "Shohih Bukhori" },
+  { hari: "Selasa", jam: "10:45–11:30", mapel: "Tafsir" },
+  { hari: "Selasa", jam: "12:30–13:15", mapel: "Tajwid" },
+  { hari: "Rabu", jam: "06:30–07:00", mapel: "Mustholah" },
+  { hari: "Rabu", jam: "08:00–08:45", mapel: "Bidayatul Mujtahid" },
+  { hari: "Rabu", jam: "10:00–10:45", mapel: "Al Muharror" },
+  { hari: "Rabu", jam: "10:45–11:30", mapel: "Tadwinussunnah" },
+  { hari: "Rabu", jam: "12:30–13:15", mapel: "Tajwid" },
+  { hari: "Kamis", jam: "06:30–07:00", mapel: "Mustholah" },
+  { hari: "Kamis", jam: "08:00–08:45", mapel: "Ushul Iman" },
+  { hari: "Kamis", jam: "10:00–10:45", mapel: "Bidayatul Mujtahid" },
+  { hari: "Kamis", jam: "10:45–11:30", mapel: "Tafsir" },
+  { hari: "Kamis", jam: "12:30–13:15", mapel: "Tajwid" },
+];
+
+/* ========= STATE ========== */
+let state = {
+  user: null,
+  absensi: {}, // { kelas, waktu, { nama: status } }
+  jurnal: JSON.parse(localStorage.getItem('jurnal')) || [],  // { hari, jam, mapel, materi }
+  rekap: JSON.parse(localStorage.getItem('rekap')) || [],   // rekap pertemuan
+};
+
+/* ========= UTILITIES ========== */
+function updateCurrentDateTime() {
+  const now = new Date();
+  const options = { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' };
+  document.getElementById('currentDate').textContent = now.toLocaleDateString('id-ID', options);
+  document.getElementById('journalDate').textContent = now.toLocaleDateString('id-ID', options);
+  
+  const timeOptions = { hour: '2-digit', minute: '2-digit', second: '2-digit' };
+  document.getElementById('currentTime').textContent = now.toLocaleTimeString('id-ID', timeOptions);
+}
+setInterval(updateCurrentDateTime, 1000);
+updateCurrentDateTime();
+
+/* ========= DARK MODE ========== */
+function setDarkMode(on) {
+  if (on) document.documentElement.classList.add('dark');
+  else document.documentElement.classList.remove('dark');
+  localStorage.setItem('dark', on ? '1' : '0');
+  document.getElementById('darkIcon').textContent = on ? '☀️' : '🌙'
+}
+/* ========= NAVIGATION ========== */
+function showSection(id) {
+  // Hide all sections
+  ['loginSection','dashboardSection','absensiSection','jurnalSection']
+    .forEach(sec => document.getElementById(sec).classList.add('hide'));
+  
+  // Show selected section
+  document.getElementById(id).classList.remove('hide');
+  
+  // Update active nav button
+  const navBtns = document.querySelectorAll('.navbtn');
+  navBtns.forEach(btn => {
+    btn.classList.remove('nav-active', 'text-primary-600', 'dark:text-primary-400');
+  });
+  
+  if (id === 'dashboardSection') {
+    document.getElementById('btnDashboard').classList.add('nav-active', 'text-primary-600', 'dark:text-primary-400');
+  } else if (id === 'absensiSection') {
+    document.getElementById('btnAbsensi').classList.add('nav-active', 'text-primary-600', 'dark:text-primary-400');
+  } else if (id === 'jurnalSection') {
+    document.getElementById('btnJurnal').classList.add('nav-active', 'text-primary-600', 'dark:text-primary-400');
+  }
+}
+
+document.getElementById("btnDashboard").onclick = () => {
+  if (state.user) { 
+    showSection("dashboardSection"); 
+    updateDashboard(); 
+  }
+};
+document.getElementById("btnAbsensi").onclick = () => {
+  if (state.user) { 
+    showSection("absensiSection"); 
+    updateAbsensiTable(); 
+  }
+};
+document.getElementById("btnJurnal").onclick = () => {
+  if (state.user) { 
+    showSection("jurnalSection"); 
+    updateJurnalJadwal();
+    updateRecentJournals();
+  }
+};
+document.getElementById("btnLogout").onclick = () => {
+  state.user = null;
+  localStorage.removeItem('user');
+  showSection("loginSection");
+  document.getElementById("btnLogout").classList.add("hide");
+  document.getElementById("loginUser").value = "";
+  document.getElementById("loginPass").value = "";
+};
+
+/* ========= LOGIN ========== */
+document.getElementById('loginForm').onsubmit = function(e) {
+  e.preventDefault();
+  let u = document.getElementById('loginUser').value.trim();
+  let p = document.getElementById('loginPass').value.trim();
+  let user = USERS.find(x => x.username === u && x.password === p);
+  
+  if (user) {
+    state.user = user;
+    localStorage.setItem('user', JSON.stringify(user));
+    document.getElementById("loginError").textContent = "";
+    
+    // Show appropriate section based on role
+    if (user.role === 'admin') {
+      showSection("dashboardSection");
+      updateDashboard();
+    } else {
+      showSection("absensiSection");
+      updateAbsensiTable();
+    }
+    
+    document.getElementById("btnLogout").classList.remove("hide");
+    
+    // Show welcome notification
+    const welcomeMsg = document.createElement('div');
+    welcomeMsg.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center animate-fade-in';
+    welcomeMsg.innerHTML = `<i class="fas fa-check-circle mr-2"></i> Selamat datang, ${user.username}!`;
+    document.body.appendChild(welcomeMsg);
+    setTimeout(() => {
+      welcomeMsg.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+      setTimeout(() => welcomeMsg.remove(), 500);
+    }, 3000);
+  } else {
+    document.getElementById("loginError").textContent = "Username atau password salah.";
+    document.getElementById("loginPass").value = "";
+    document.getElementById("loginPass").focus();
+  }
+};
+
+// Auto login if user exists in localStorage
+if (localStorage.getItem('user')) {
+  state.user = JSON.parse(localStorage.getItem('user'));
+  if (state.user.role === 'admin') {
+    showSection("dashboardSection");
+    updateDashboard();
+  } else {
+    showSection("absensiSection");
+    updateAbsensiTable();
+  }
+  document.getElementById("btnLogout").classList.remove("hide");
+}
+
+/* ========= DASHBOARD ========= */
+function updateDashboard() {
+  // Calculate statistics
+  let hadir = 0, alpa = 0, izin = 0, sakit = 0;
+  let total = KELAS.TQS.length + KELAS.KHS.length;
+  
+  if (state.rekap.length) {
+    let last = state.rekap[state.rekap.length-1];
+    for (const [nama, s] of Object.entries(last.data)) {
+      if (s === "Hadir") hadir++;
+      else if (s === "Alpa") alpa++;
+      else if (s === "Izin") izin++;
+      else if (s === "Sakit") sakit++;
+    }
+  }
+  
+  // Update stats cards with animation
+  animateValue('statTotalSantri', 0, total, 1000);
+  animateValue('statHadir', 0, hadir, 1000);
+  animateValue('statAlpa', 0, alpa, 1000);
+  animateValue('statIzin', 0, izin, 1000);
+  animateValue('statSakit', 0, sakit, 1000);
+  
+  // Pie chart
+  if (window.pieChart) window.pieChart.destroy();
+  window.pieChart = new Chart(document.getElementById('pieStatus'), {
+    type: 'pie',
+    data: {
+      labels: ["Hadir", "Alpa", "Izin", "Sakit"],
+      datasets: [{ 
+        data: [hadir, alpa, izin, sakit],
+        backgroundColor: ["#16a34a","#dc2626","#facc15","#6366f1"],
+        borderWidth: 0
+      }]
+    },
+    options: { 
+      plugins: { 
+        legend: { 
+          position: 'right',
+          labels: {
+            color: '#6b7280',
+            font: {
+              family: "'Inter', sans-serif"
+            },
+            padding: 20
+          } 
+        },
+        tooltip: {
+          bodyFont: {
+            family: "'Inter', sans-serif"
+          }
+        }
+      },
+      cutout: '60%',
+      animation: {
+        animateScale: true,
+        animateRotate: true
+      }
+    }
+  });
+  
+  // Bar chart: per kelas
+  if (window.barChart) window.barChart.destroy();
+  let tqs = 0, khs = 0;
+  if (state.rekap.length) {
+    let last = state.rekap[state.rekap.length-1];
+    for (const [nama,s] of Object.entries(last.data)) {
+      if (KELAS.TQS.includes(nama) && s==="Hadir") tqs++;
+      if (KELAS.KHS.includes(nama) && s==="Hadir") khs++;
+    }
+  }
+  
+  window.barChart = new Chart(document.getElementById('barKelas'), {
+    type: 'bar',
+    data: {
+      labels: ["TQS", "KHS"],
+      datasets: [{
+        label: "Hadir", 
+        data: [tqs, khs], 
+        backgroundColor: ["#3b82f6","#10b981"],
+        borderRadius: 6,
+        borderSkipped: false
+      }]
+    },
+    options: { 
+      plugins: { 
+        legend: { display: false },
+        tooltip: {
+          bodyFont: {
+            family: "'Inter', sans-serif"
+          }
+        }
+      }, 
+      scales: { 
+        y: { 
+          beginAtZero: true,
+          grid: {
+            color: 'rgba(0, 0, 0, 0.05)'
+          },
+          ticks: {
+            color: '#6b7280'
+          }
+        },
+        x: {
+          grid: {
+            display: false
+          },
+          ticks: {
+            color: '#6b7280'
+          }
+        }
+      },
+      animation: {
+        delay: (context) => {
+          return context.dataIndex * 100;
+        }
+      }
+    }
+  });
+  
+  // Rekap Table
+  let tbl = `<table class="min-w-full divide-y divide-gray-200 dark:divide-gray-700">
+    <thead class="bg-gray-50 dark:bg-gray-700">
+      <tr>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Tanggal</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Kelas</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Pertemuan</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Hadir</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Alpa</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Izin</th>
+        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 dark:text-gray-400 uppercase tracking-wider">Sakit</th>
+      </tr>
+    </thead>
+    <tbody class="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">`;
+  
+  for (let r of state.rekap.slice(-3).reverse()) {
+    let st = {Hadir:0, Alpa:0, Izin:0, Sakit:0};
+    for (const s of Object.values(r.data)) st[s] = (st[s]||0)+1;
+    
+    tbl += `<tr class="hover:bg-gray-50 dark:hover:bg-gray-700/50">
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">${r.tanggal}</td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">${r.kelas}</td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">${r.pertemuan}</td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-green-600 dark:text-green-400">${st.Hadir||0}</td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-red-600 dark:text-red-400">${st.Alpa||0}</td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-yellow-600 dark:text-yellow-400">${st.Izin||0}</td>
+      <td class="px-6 py-4 whitespace-nowrap text-sm text-purple-600 dark:text-purple-400">${st.Sakit||0}</td>
+    </tr>`;
+  }
+  
+  tbl += `</tbody></table>`;
+  document.getElementById('rekapTableDiv').innerHTML = tbl;
+}
+
+function animateValue(id, start, end, duration) {
+  let startTimestamp = null;
+  const element = document.getElementById(id);
+  const step = (timestamp) => {
+    if (!startTimestamp) startTimestamp = timestamp;
+    const progress = Math.min((timestamp - startTimestamp) / duration, 1);
+    element.textContent = Math.floor(progress * (end - start) + start);
+    if (progress < 1) {
+      window.requestAnimationFrame(step);
+    }
+  };
+  window.requestAnimationFrame(step);
+}
+
+/* ========= ABSENSI ========= */
+const waktuSelect = document.getElementById('waktuSelect');
+PERTEMUAN_WAKTU.forEach(w => {
+  let opt = document.createElement('option');
+  opt.value = w; 
+  opt.textContent = w;
+  waktuSelect.appendChild(opt);
+});
+
+let absensiKelas = "TQS";
+let absensiWaktu = PERTEMUAN_WAKTU[0];
+
+document.getElementById('kelasSelect').onchange = function() {
+  absensiKelas = this.value; 
+  updateAbsensiTable();
+};
+
+waktuSelect.onchange = function() {
+  absensiWaktu = this.value; 
+  updateAbsensiTable();
+};
+
+document.getElementById('searchSantri').oninput = updateAbsensiTable;
+
+document.getElementById('btnResetAbsensi').onclick = function() {
+  state.absensi = {}; 
+  updateAbsensiTable();
+  document.getElementById('searchSantri').value = "";
+  
+  // Show notification
+  const notif = document.createElement('div');
+  notif.className = 'fixed bottom-4 right-4 bg-blue-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center animate-fade-in';
+  notif.innerHTML = `<i class="fas fa-redo mr-2"></i> Form absensi telah direset`;
+  document.body.appendChild(notif);
+  setTimeout(() => {
+    notif.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+    setTimeout(() => notif.remove(), 500);
+  }, 3000);
+};
+
+function updateAbsensiTable() {
+  let tbody = document.getElementById('absensiTableBody');
+  let search = document.getElementById('searchSantri').value.toLowerCase();
+  let santri = KELAS[absensiKelas].filter(nama => nama.toLowerCase().includes(search));
+  
+  tbody.innerHTML = "";
+  
+  for (let i = 0; i < santri.length; i++) {
+    let nama = santri[i];
+    let val = state.absensi[nama] || "";
+    
+    let tr = document.createElement('tr');
+    tr.className = 'hover:bg-gray-50 dark:hover:bg-gray-700/50';
+    tr.innerHTML = `
+      <td class="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900 dark:text-gray-100">${i+1}</td>
+      <td class="px-4 py-3 whitespace-nowrap text-sm text-gray-700 dark:text-gray-300">${nama}</td>
+      <td class="px-4 py-3 whitespace-nowrap">
+        <select class="w-full border border-gray-300 dark:border-gray-600 rounded-md py-1 px-2 bg-white dark:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent select-custom" data-nama="${nama}">
+          <option value="">Pilih Status</option>
+          ${STATUS_LIST.map(s => `
+            <option value="${s.text}" ${val===s.text?"selected":""} 
+                    class="${s.color.replace('dark:', '')}">
+              ${s.text}
+            </option>
+          `).join("")}
+        </select>
+      </td>`;
+    
+    tbody.appendChild(tr);
+  }
+  
+  // Add onchange event for all selects
+  tbody.querySelectorAll('select').forEach(sel => {
+    sel.onchange = function() {
+      state.absensi[this.dataset.nama] = this.value;
+    };
+  });
+}
+
+document.getElementById('absensiForm').onsubmit = function(e) {
+  e.preventDefault();
+  
+  // Validate all statuses are selected
+  let list = KELAS[absensiKelas];
+  let ok = list.every(nama => state.absensi[nama]);
+  
+  if (!ok) {
+    const errorEl = document.getElementById('absensiInfo');
+    errorEl.textContent = "Harap lengkapi semua status absensi!";
+    errorEl.className = "ml-4 text-sm text-red-500";
+    return;
+  }
+  
+  let tanggal = new Date().toLocaleDateString("id-ID", {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+  
+  // Add to rekap
+  state.rekap.push({
+    tanggal,
+    kelas: absensiKelas,
+    pertemuan: absensiWaktu,
+    data: {...state.absensi}
+  });
+  
+  // Save to localStorage
+  localStorage.setItem('rekap', JSON.stringify(state.rekap));
+  
+  // Show success message
+  const successEl = document.getElementById('absensiInfo');
+  successEl.textContent = "Absensi berhasil disimpan!";
+  successEl.className = "ml-4 text-sm text-green-500";
+  
+  // Reset form
+  state.absensi = {};
+  updateAbsensiTable();
+  
+  // Show notification
+  const notif = document.createElement('div');
+  notif.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center animate-fade-in';
+  notif.innerHTML = `<i class="fas fa-check-circle mr-2"></i> Absensi berhasil disimpan!`;
+  document.body.appendChild(notif);
+  setTimeout(() => {
+    notif.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+    setTimeout(() => notif.remove(), 500);
+  }, 3000);
+  
+  // Clear info after 3 seconds
+  setTimeout(() => {
+    successEl.textContent = "";
+    successEl.className = "ml-4 text-sm";
+  }, 3000);
+  
+  // Update dashboard if visible
+  if (!document.getElementById('dashboardSection').classList.contains('hide')) {
+    updateDashboard();
+  }
+};
+
+/* ========= JURNAL ========= */
+function updateJurnalJadwal() {
+  let select = document.getElementById('jurnalJadwalSelect');
+  select.innerHTML = "";
+  
+  // Group jadwal by day
+  const jadwalByHari = {};
+  JADWAL.forEach(j => {
+    if (!jadwalByHari[j.hari]) jadwalByHari[j.hari] = [];
+    jadwalByHari[j.hari].push(j);
+  });
+  
+  // Add optgroups for each day
+  for (const [hari, jadwals] of Object.entries(jadwalByHari)) {
+    let optgroup = document.createElement('optgroup');
+    optgroup.label = hari;
+    
+    jadwals.forEach((j, i) => {
+      let opt = document.createElement('option');
+      opt.value = i;
+      opt.textContent = `${j.jam} - ${j.mapel}`;
+      optgroup.appendChild(opt);
+    });
+    
+    select.appendChild(optgroup);
+  }
+}
+
+function updateRecentJournals() {
+  const recentDiv = document.getElementById('recentJournals');
+  recentDiv.innerHTML = "";
+  
+  const recent = state.jurnal.slice(-3).reverse();
+  
+  if (recent.length === 0) {
+    recentDiv.innerHTML = `
+      <div class="p-6 text-center text-gray-500 dark:text-gray-400">
+        <i class="fas fa-book-open text-2xl mb-2"></i>
+        <p>Belum ada jurnal terakhir</p>
+      </div>
+    `;
+    return;
+  }
+  
+  recent.forEach(j => {
+    const journalEl = document.createElement('div');
+    journalEl.className = 'p-4 hover:bg-gray-50 dark:hover:bg-gray-700/50';
+    journalEl.innerHTML = `
+      <div class="flex justify-between items-start">
+        <div>
+          <h4 class="font-medium text-gray-900 dark:text-gray-100">${j.mapel}</h4>
+          <p class="text-sm text-gray-500 dark:text-gray-400 mt-1">${j.hari}, ${j.jam}</p>
+        </div>
+        <span class="text-xs bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 px-2 py-1 rounded-full">
+          ${j.tanggal}
+        </span>
+      </div>
+      <div class="mt-2 text-sm text-gray-700 dark:text-gray-300">
+        ${j.materi}
+      </div>
+    `;
+    recentDiv.appendChild(journalEl);
+  });
+}
+
+document.getElementById('jurnalForm').onsubmit = function(e) {
+  e.preventDefault();
+  
+  let idx = document.getElementById('jurnalJadwalSelect').value;
+  let materi = document.getElementById('jurnalMateri').value.trim();
+  
+  if (!materi) {
+    const errorEl = document.getElementById('jurnalInfo');
+    errorEl.textContent = "Harap isi materi pelajaran!";
+    errorEl.className = "ml-4 text-sm text-red-500";
+    return;
+  }
+  
+  let jadwal = JADWAL[idx];
+  let tanggal = new Date().toLocaleDateString("id-ID", {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
+  });
+  
+  // Add to jurnal
+  state.jurnal.push({
+    tanggal,
+    ...jadwal,
+    materi
+  });
+  
+  // Save to localStorage
+  localStorage.setItem('jurnal', JSON.stringify(state.jurnal));
+  
+  // Show success message
+  const successEl = document.getElementById('jurnalInfo');
+  successEl.textContent = "Jurnal berhasil disimpan!";
+  successEl.className = "ml-4 text-sm text-green-500";
+  
+  // Reset form
+  document.getElementById('jurnalMateri').value = "";
+  
+  // Update recent journals
+  updateRecentJournals();
+  
+  // Show notification
+  const notif = document.createElement('div');
+  notif.className = 'fixed bottom-4 right-4 bg-green-500 text-white px-4 py-2 rounded-lg shadow-lg flex items-center animate-fade-in';
+  notif.innerHTML = `<i class="fas fa-check-circle mr-2"></i> Jurnal berhasil disimpan!`;
+  document.body.appendChild(notif);
+  setTimeout(() => {
+    notif.classList.add('opacity-0', 'transition-opacity', 'duration-500');
+    setTimeout(() => notif.remove(), 500);
+  }, 3000);
+  
+  // Clear info after 3 seconds
+  setTimeout(() => {
+    successEl.textContent = "";
+    successEl.className = "ml-4 text-sm";
+  }, 3000);
+};
+
+/* ===== UX IMPROVEMENTS ===== */
+// Highlight active nav button on page load
+if (state.user) {
+  if (state.user.role === 'admin') {
+    document.getElementById('btnDashboard').classList.add('nav-active', 'text-primary-600', 'dark:text-primary-400');
+  } else {
+    document.getElementById('btnAbsensi').classList.add('nav-active', 'text-primary-600', 'dark:text-primary-400');
+  }
+}
+
+// Keyboard shortcuts
+document.addEventListener('keydown', e => {
+  if (!state.user) return;
+  if (e.ctrlKey && e.key === '1') document.getElementById("btnDashboard").click();
+  if (e.ctrlKey && e.key === '2') document.getElementById("btnAbsensi").click();
+  if (e.ctrlKey && e.key === '3') document.getElementById("btnJurnal").click();
+  if (e.ctrlKey && e.key === '0') document.getElementById("btnLogout").click();
+});
+
+// Auto focus on login inputs
+if (document.getElementById('loginSection').classList.contains('hide')) {
+  document.getElementById('loginUser').focus();
+}
+
+// Initialize waktu select for absensi
+waktuSelect.value = absensiWaktu;
+
+// Initialize dashboard if needed
+if (state.user && state.user.role === 'admin' && 
+    !document.getElementById('dashboardSection').classList.contains('hide')) {
+  updateDashboard();
+}
+</script>
+</body>
+</html>

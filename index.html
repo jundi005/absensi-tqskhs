@@ -898,7 +898,7 @@ document.getElementById('absensiForm').onsubmit = function(e) {
   let tanggal = new Date().toLocaleDateString("id-ID", {
     weekday: 'long', year: 'numeric', month: 'long', day: 'numeric'
   });
-  
+  saveRekapToSheet(rekap)
   // Add to rekap
   state.rekap.push({
     tanggal,
@@ -906,19 +906,7 @@ document.getElementById('absensiForm').onsubmit = function(e) {
     pertemuan: absensiWaktu,
     data: {...state.absensi}
   });
-  // Simpan ke Google Sheet
-  saveRekapToSheet(state.rekap[state.rekap.length-1])
-    .then(() => {
-      const successEl = document.getElementById('absensiInfo');
-      successEl.textContent = "Absensi berhasil disimpan & terkirim ke Google Sheets!";
-      successEl.className = "ml-4 text-sm text-green-500";
-    })
-    .catch(err => {
-      const errEl = document.getElementById('absensiInfo');
-      errEl.textContent = "Gagal simpan ke Google Sheets: " + (err.result?.error?.message || err.message);
-      errEl.className = "ml-4 text-sm text-red-500";
-    });
-  // ... lanjut reset form, notif dsb ...
+  
   state.absensi = {};
   updateAbsensiTable();
   
@@ -1047,23 +1035,9 @@ document.getElementById('jurnalForm').onsubmit = function(e) {
   });
   
   // Save to localStorage
-  localStorage.setItem('jurnal', JSON.stringify(state.jurnal));
-  // Simpan ke Google Sheets
   saveJurnalToSheet(jurnal)
     .then(() => {
-      const successEl = document.getElementById('jurnalInfo');
-      successEl.textContent = "Jurnal berhasil disimpan & terkirim ke Google Sheets!";
-      successEl.className = "ml-4 text-sm text-green-500";
-    })
-    .catch(err => {
-      const errEl = document.getElementById('jurnalInfo');
-      errEl.textContent = "Gagal simpan ke Google Sheets: " + (err.result?.error?.message || err.message);
-      errEl.className = "ml-4 text-sm text-red-500";
-    });
-  document.getElementById('jurnalMateri').value = "";
-  updateRecentJournals();
-  // dst (copy notifikasi dsb)
-};
+});
   
   // Show success message
   const successEl = document.getElementById('jurnalInfo');
@@ -1125,36 +1099,10 @@ if (state.user && state.user.role === 'admin' &&
     !document.getElementById('dashboardSection').classList.contains('hide')) {
   updateDashboard();
 }
-const SHEET_ID = '1nkXfCS_qKaL8WbfMX3JvRuETb7xVFdARBCrnG1tbQMU'; // <-- ganti!
-const API_KEY = 'AIzaSyA02R7rf29FAZ7MMF2VL3Z-EBAglP_4I-0'; // <-- ganti!
-const CLIENT_ID = '42647875048-k3ivk6gr9u332mrmfouq9m6mfvior6c6.apps.googleusercontent.com'; // <-- ganti!
-const SCOPES = 'https://www.googleapis.com/auth/spreadsheets';
+const GAS_URL = "https://script.google.com/macros/s/AKfycbz77mYVhkln3LfJmokOSGAgfbtkuLyYmaZKvl4Ld0rNBzEFIGSKFlQnRLLgAyvPNynJ/exec"; // Contoh: "https://script.google.com/macros/s/AKfycb.../exec"
 
-function loadGapiClient() {
-  return new Promise((resolve, reject) => {
-    if (window.gapi) {
-      resolve();
-    } else {
-      const script = document.createElement('script');
-      script.src = "https://apis.google.com/js/api.js";
-      script.onload = () => gapi.load('client:auth2', resolve);
-      script.onerror = reject;
-      document.head.appendChild(script);
-    }
-  });
-}
-function initGapi() {
-  return gapi.client.init({
-    apiKey: API_KEY,
-    clientId: CLIENT_ID,
-    discoveryDocs:["https://sheets.googleapis.com/$discovery/rest?version=v4"],
-    scope: SCOPES
-  });
-}
-function handleAuthClick() {
-  return gapi.auth2.getAuthInstance().signIn();
-}
-function rekapToSheetRow(rekap) {
+// Kirim data absensi ke Google Sheets
+async function saveRekapToSheet(rekap) {
   let hadir = 0, alpa = 0, izin = 0, sakit = 0;
   Object.values(rekap.data).forEach(s => {
     if (s === "Hadir") hadir++;
@@ -1162,46 +1110,41 @@ function rekapToSheetRow(rekap) {
     if (s === "Izin") izin++;
     if (s === "Sakit") sakit++;
   });
-  return [
+  const row = [
     rekap.tanggal, rekap.kelas, rekap.pertemuan,
     hadir, alpa, izin, sakit,
     JSON.stringify(rekap.data)
   ];
+  return fetch(GAS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sheetName: "Absensi", row })
+  });
 }
-function jurnalToSheetRow(jurnal) {
-  return [
+
+// Kirim data jurnal ke Google Sheets
+async function saveJurnalToSheet(jurnal) {
+  const row = [
     jurnal.tanggal, jurnal.hari, jurnal.jam, jurnal.mapel, jurnal.materi
   ];
-}
-async function saveRekapToSheet(rekap) {
-  await loadGapiClient();
-  await initGapi();
-  if (!gapi.auth2.getAuthInstance().isSignedIn.get()) await handleAuthClick();
-
-  return gapi.client.sheets.spreadsheets.values.append({
-    spreadsheetId: SHEET_ID,
-    range: 'Absensi!A1',
-    valueInputOption: 'USER_ENTERED',
-    insertDataOption: 'INSERT_ROWS',
-    resource: {
-      values: [rekapToSheetRow(rekap)]
-    }
+  return fetch(GAS_URL, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ sheetName: "Jurnal", row })
   });
 }
-async function saveJurnalToSheet(jurnal) {
-  await loadGapiClient();
-  await initGapi();
-  if (!gapi.auth2.getAuthInstance().isSignedIn.get()) await handleAuthClick();
 
-  return gapi.client.sheets.spreadsheets.values.append({
-    spreadsheetId: SHEET_ID,
-    range: 'Jurnal!A1',
-    valueInputOption: 'USER_ENTERED',
-    insertDataOption: 'INSERT_ROWS',
-    resource: {
-      values: [jurnalToSheetRow(jurnal)]
-    }
-  });
+// Ambil data absensi dari Google Sheets
+async function getAbsensiSheet() {
+  const resp = await fetch(GAS_URL + "?sheetName=Absensi");
+  return await resp.json();
+}
+
+// Ambil data jurnal dari Google Sheets
+async function getJurnalSheet() {
+  const resp = await fetch(GAS_URL + "?sheetName=Jurnal");
+  return await resp.json();
+}
 }
 </script>
 </body>

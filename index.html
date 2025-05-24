@@ -906,6 +906,21 @@ document.getElementById('absensiForm').onsubmit = function(e) {
     pertemuan: absensiWaktu,
     data: {...state.absensi}
   });
+  // Simpan ke Google Sheet
+  saveRekapToSheet(state.rekap[state.rekap.length-1])
+    .then(() => {
+      const successEl = document.getElementById('absensiInfo');
+      successEl.textContent = "Absensi berhasil disimpan & terkirim ke Google Sheets!";
+      successEl.className = "ml-4 text-sm text-green-500";
+    })
+    .catch(err => {
+      const errEl = document.getElementById('absensiInfo');
+      errEl.textContent = "Gagal simpan ke Google Sheets: " + (err.result?.error?.message || err.message);
+      errEl.className = "ml-4 text-sm text-red-500";
+    });
+  // ... lanjut reset form, notif dsb ...
+  state.absensi = {};
+  updateAbsensiTable();
   
   // Save to localStorage
   localStorage.setItem('rekap', JSON.stringify(state.rekap));
@@ -1033,6 +1048,22 @@ document.getElementById('jurnalForm').onsubmit = function(e) {
   
   // Save to localStorage
   localStorage.setItem('jurnal', JSON.stringify(state.jurnal));
+  // Simpan ke Google Sheets
+  saveJurnalToSheet(jurnal)
+    .then(() => {
+      const successEl = document.getElementById('jurnalInfo');
+      successEl.textContent = "Jurnal berhasil disimpan & terkirim ke Google Sheets!";
+      successEl.className = "ml-4 text-sm text-green-500";
+    })
+    .catch(err => {
+      const errEl = document.getElementById('jurnalInfo');
+      errEl.textContent = "Gagal simpan ke Google Sheets: " + (err.result?.error?.message || err.message);
+      errEl.className = "ml-4 text-sm text-red-500";
+    });
+  document.getElementById('jurnalMateri').value = "";
+  updateRecentJournals();
+  // dst (copy notifikasi dsb)
+};
   
   // Show success message
   const successEl = document.getElementById('jurnalInfo');
@@ -1060,7 +1091,7 @@ document.getElementById('jurnalForm').onsubmit = function(e) {
     successEl.textContent = "";
     successEl.className = "ml-4 text-sm";
   }, 3000);
-};
+
 
 /* ===== UX IMPROVEMENTS ===== */
 // Highlight active nav button on page load
